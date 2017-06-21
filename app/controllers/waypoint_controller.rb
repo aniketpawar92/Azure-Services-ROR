@@ -89,7 +89,7 @@ class WaypointController < ApplicationController
 	# Create index for Azure Search Service
 	def index
 		$config_info = (ActiveRecord::Base.configurations["azure_dayplanner_db"])
-		file = File.open('/Payloads.js')
+		file = File.open('public/Payloads.js')
 		create_index = JSON.parse(file.read)
 		create_data = create_index.to_json
 		url = "#{$config_info["serviceURL"]}" + "/indexes/" + "#{$config_info["Azuresearch.indexName"]}" + "/?api-version=" + "#{$config_info["Azuresearch.apiVersion"]}"
@@ -101,7 +101,7 @@ class WaypointController < ApplicationController
 	# Add sample data into created index
 	def insert_index_data
 		url = "#{$config_info["serviceURL"]}" + "/indexes/" + "#{$config_info["Azuresearch.indexName"]}" + "/docs/index?api-version=" + "#{$config_info["Azuresearch.apiVersion"]}"
-		file = File.open('/index_data.js')
+		file = File.open('public/index_data.js')
 		create_index = JSON.parse(file.read)
 		insert_data = render :json => create_index
 		insert_response = HTTParty.post(url, headers: {'api-key': "#{$config_info["apiKey"]}", 'Content-Type' => 'application/json'}, body: insert_data, verify: false )
