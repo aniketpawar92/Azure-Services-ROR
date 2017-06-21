@@ -4,7 +4,7 @@
   "parameters": {   
     "repoUrl": {
       "type": "string",
-      "defaultValue": "https://github.com/aniketpawar92/Azure-Services-ROR",
+      "defaultValue": "https://github.com/Click2Cloud/Microsoft-Azure-ROR",
       "metadata": {
         "description": "The URL for the GitHub repository that contains the project to deploy."
       }
@@ -157,7 +157,7 @@
                 ],
                 "properties": {
                     "endIpAddress": "255.255.255.255",
-                    "startIpAddress": "10.10.10.10"
+                    "startIpAddress": "0.0.0.0"
                 }
             },
             {
@@ -272,7 +272,8 @@
           "apiVersion": "2016-03-01",
           "dependsOn": [
             "[resourceId('Microsoft.Web/sites', variables('appName'))]",
-            "[resourceId('Microsoft.DBforPostgreSQL/servers/', variables('serverName'))]"
+            "[resourceId('Microsoft.DBforPostgreSQL/servers/', variables('serverName'))]",
+			"[resourceId('Microsoft.Search/searchServices', variables('searchServiceName'))]"
 
           ],
           "tags": {

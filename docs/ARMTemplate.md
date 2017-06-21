@@ -27,85 +27,75 @@ Following steps provide the information about the ARM Template being used for de
           "type": "Microsoft.DBforPostgreSQL/servers",
           "sku": {
             "name": "[variables('skuNamePG')]",
-            "tier": "[parameters('postgresServiceTier')]",
+            "tier": "[parameters('postgresPricingTier')]",
             "capacity": "[parameters('postgresComputeUnit')]",
             "size": "[mul(parameters('postgresStorageGB'), 1024)]"
-          },
+            },
           "location": "[parameters('postgresLocation')]",
           "properties": {
             "version": "[parameters('postgresVersion')]",
             "administratorLogin": "[parameters('postgresAdministratorLogin')]",
             "administratorLoginPassword": "[parameters('postgresAdministratorPassword')]",
             "storageMB": "[mul(parameters('postgresStorageGB'), 1024)]"
-          },
+            },
           "resources": [
-            {
-              "apiVersion": "2017-04-30-preview",
-              "name": "[variables('databaseName')]",
-              "type": "databases",
-              "location": "[parameters('postgresLocation')]",
-              "tags": {
-                "displayName": "PSQLDatabase"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.DBforPostgreSQL/servers', variables('serverName'))]"
-              ],
-              "properties": {
-              }
+          {
+            "apiVersion": "2017-04-30-preview",
+            "name": "[variables('databaseName')]",
+            "type": "databases",
+            "location": "[parameters('postgresLocation')]",
+            "tags": { "displayName": "PSQLDatabase" },
+            "dependsOn": [ "[resourceId('Microsoft.DBforPostgreSQL/servers', variables('serverName'))]" ],
+            "properties": {}
             },
             {
               "apiVersion": "2017-04-30-preview",
               "name": "PSQLServerFirewallRule",
               "type": "firewallrules",
               "location": "[parameters('postgresLocation')]",
-              "dependsOn": [
-                "[resourceId('Microsoft.DBforPostgreSQL/servers', variables('serverName'))]"
-              ],
+              "dependsOn": [ "[resourceId('Microsoft.DBforPostgreSQL/servers', variables('serverName'))]" ],
               "properties": {
                 "endIpAddress": "255.255.255.255",
                 "startIpAddress": "0.0.0.0"
-              }
+                }
             },
             {
               "type": "Microsoft.Insights/alertRules",
-              "name": "CPU-Alert",
-              "apiVersion": "2016-03-01",
-              "location": "[resourceGroup().location]",
-              "dependsOn": [
-                "[resourceId('Microsoft.DBforPostgreSQL/servers', variables('serverName'))]"
-              ],
-              "properties": {
-                  "name": "CPU-Alert",
-                  "description": "Default alert which notify when cpu percent is greater than 80%",
-                  "isEnabled": "true",
-                  "condition": {
-                      "odata.type": "Microsoft.Azure.Management.Insights.Models.ThresholdRuleCondition",
-                      "dataSource": {
-                          "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleMetricDataSource",
-                          "resourceUri": "[resourceId('Microsoft.DBforPostgreSQL/servers', variables('serverName'))]",
-                          "metricName": "cpu_percent"
-                      },
-                      "operator": "GreaterThan",
-                      "threshold": "80",
-                      "windowSize": "00:05:00",
-                      "timeAggregation": "Average"
-                  },
-                  "actions": [
-                      {
-                          "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleEmailAction",
-                          "sendToServiceOwners": "true"
-                      }
-                  ]
-              }
+                "name": "CPU-Alert",
+                "apiVersion": "2016-03-01",
+                "location": "[resourceGroup().location]",
+                "dependsOn": [ "[resourceId('Microsoft.DBforPostgreSQL/servers', variables('serverName'))]" ],
+                "properties": {
+                    "name": "CPU-Alert",
+                    "description": "Default alert which notify when cpu percent is greater than 80%",
+                    "isEnabled": "true",
+                    "condition": {
+                        "odata.type": "Microsoft.Azure.Management.Insights.Models.ThresholdRuleCondition",
+                        "dataSource": {
+                            "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleMetricDataSource",
+                            "resourceUri": "[resourceId('Microsoft.DBforPostgreSQL/servers', variables('serverName'))]",
+                            "metricName": "cpu_percent"
+                        },
+                        "operator": "GreaterThan",
+                        "threshold": "80",
+                        "windowSize": "00:05:00",
+                        "timeAggregation": "Average"
+                        },
+                        "actions": [
+                        {
+                            "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleEmailAction",
+                            "sendToServiceOwners": "true",
+                            "customEmails": "[variables('customEmails')]"
+                        }
+                    ]
+                }
             },
             {
                 "type": "Microsoft.Insights/alertRules",
                 "name": "Storage-Alert",
                 "apiVersion": "2016-03-01",
                 "location": "[resourceGroup().location]",
-                "dependsOn": [
-                    "[resourceId('Microsoft.DBforPostgreSQL/servers', variables('serverName'))]"
-                ],
+                "dependsOn": [ "[resourceId('Microsoft.DBforPostgreSQL/servers', variables('serverName'))]" ],
                 "properties": {
                     "name": "Storate_Alert",
                     "description": "Default alert which notify when storage percent is greater than 80%",
@@ -125,13 +115,13 @@ Following steps provide the information about the ARM Template being used for de
                     "actions": [
                         {
                             "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleEmailAction",
-                            "sendToServiceOwners": "true"
+                            "sendToServiceOwners": "true",
+                            "customEmails": "[variables('customEmails')]"
                         }
                     ]
                 }
             }
-          ]
-        }
+        ]
         ``` 
         Note the important points about the above code block:-
         * The use of parameters ensures that the created resources are named and configured in a way that makes them consistent with one another.
@@ -151,7 +141,7 @@ Following steps provide the information about the ARM Template being used for de
           "location": "[resourceGroup().location]",
           "sku": 
           {
-            "name": "[toLower(parameters('searchServiceSku'))]"
+            "name": "[toLower(parameters('searchPricingTier'))]"
           }
       }
       ```
@@ -162,8 +152,8 @@ Following steps provide the information about the ARM Template being used for de
 
       ```json
       {
-          "apiVersion": "2015-08-01",
-          "name": "[variables('hostingPlanName')]",
+          "apiVersion": "2016-03-01",
+          "name": "[variables('servicePlanName')]",
           "type": "Microsoft.Web/serverfarms",
           "location": "[resourceGroup().location]",
           "tags": 
@@ -190,44 +180,41 @@ Following steps provide the information about the ARM Template being used for de
       ```json
           {
           "type": "Microsoft.Web/sites",
-          "name": "[parameters('appName')]",
+          "name": "[variables('appName')]",
           "apiVersion": "2016-03-01",
           "location": "[resourceGroup().location]",
           "properties": {
-            "name": "[parameters('appName')]",
+            "name": "[variables('appName')]",
             "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', variables('servicePlanName'))]"
-          },
-          "dependsOn": [
-            "[resourceId('Microsoft.Web/serverfarms', variables('servicePlanName'))]"
-          ],
+            },
+          "dependsOn": [ "[resourceId('Microsoft.Web/serverfarms', variables('servicePlanName'))]" ],
           "resources": [
             {
-              "name": "appsettings",
-              "type": "config",
-              "apiVersion": "2016-03-01",
-              "dependsOn": [
-                "[resourceId('Microsoft.Web/sites', parameters('appName'))]",
-                "[resourceId('Microsoft.DBforPostgreSQL/servers/', variables('serverName'))]"
-
-              ],
-              "tags": {
-                "displayName": "appSettings"
-              },
-              "properties": {
-                "DOCKER_CUSTOM_IMAGE_NAME": "click2cloud/azure-rails",
-                "GITURL": "[parameters('repoUrl')]",
-                "POSTGRESCON": "[concat('postgres://', parameters('postgresAdministratorLogin'), '%40',  variables('serverName'), ':', uriComponent(parameters('postgresAdministratorPassword')), '@', reference(resourceId('Microsoft.DBforPostgreSQL/servers/', variables('serverName'))).fullyQualifiedDomainName, ':5432/', variables('databaseName'), '?sslmode=require')]"
-              }
-            }
-          ]
-        }
+                "name": "appsettings",
+                "type": "config",
+                "apiVersion": "2016-03-01",
+                "dependsOn": [
+                    "[resourceId('Microsoft.Web/sites', variables('appName'))]",
+                    "[resourceId('Microsoft.DBforPostgreSQL/servers/', variables('serverName'))]"
+                    ],
+                "tags": { "displayName": "appSettings" },
+                "properties": {
+                    "DOCKER_CUSTOM_IMAGE_NAME": "click2cloud/azure-rails",
+                    "GITURL": "[parameters('repoUrl')]",
+                    "postgresqlConnectionString": "[concat('postgres://', parameters('postgresAdministratorLogin'), '%40',  variables('serverName'), ':', uriComponent(parameters('postgresAdministratorPassword')), '@', reference(resourceId('Microsoft.DBforPostgreSQL/servers/', variables('serverName'))).fullyQualifiedDomainName, ':5432/', variables('databaseName'), '?sslmode=require')]",
+                    "searchServicePrimaryKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices', variables('searchServiceName')), '2015-08-19').primaryKey]",
+                    "searchServiceUri": "[concat('https://', variables('searchServiceName'), '.search.windows.net')]"
+                    }
+                }
+             ]
+          }
       ```
       Note that the type element specifies the string for an App Service and other elements and properties are filled in using the parameters defined in the JSON file.
       * The web app depends on three different resources. This means that Azure Resource Manager will create the web app only after the App Service plan, the PostgreSQL Database Server and Azure Search Service are created.
         ```json
         "dependsOn": 
         [
-            "[resourceId('Microsoft.Web/serverFarms/', variables('hostingPlanName'))]",
+            "[resourceId('Microsoft.Web/sites', variables('appName'))]",
             "[resourceId('Microsoft.DBforPostgreSQL/servers/', variables('serverName'))]",
             "[resourceId('Microsoft.Search/searchServices', variables('searchServiceName'))]"
         ],

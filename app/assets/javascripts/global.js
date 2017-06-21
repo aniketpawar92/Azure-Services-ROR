@@ -62,7 +62,6 @@ var azureSearch = {
             },
             success: function (indexData) {
                 response = indexData.value
-                console.log(response)
                 if (response.length > 0) {
                     for (var i = 0; i < response.length; i++) {
                         var meetingContentHTML = '<div>' +

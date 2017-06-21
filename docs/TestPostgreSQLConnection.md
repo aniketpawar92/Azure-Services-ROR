@@ -12,7 +12,7 @@
 
 1.	Click on the `Alert Rules` present on left side panel. 
 
-    ![](img/image-21.png)
+    ![](img/image-21.PNG)
 
 1.	There are two `Alert Rules` created while deploying with ARM Template.
       - __CPU-Alert:-__ This is a CPU usage based alert with a threshold of 80% over an evaluation window of 5 minutes. If the condition is violated the alert will transition to an “Active” state and when the alert condition is resolved the alert rules gets back to `Non-Activated or Warning` states.  Each data point for CPU percentage is an average value over the last five-minute period. In the backend, the alerting engine evaluates each data point and triggers a state change event when a condition is violated or resolved.
