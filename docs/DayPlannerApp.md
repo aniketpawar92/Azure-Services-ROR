@@ -47,11 +47,12 @@ Following are the steps to visit the hosted website with all this features:-
     And for accessing __Azure Search Service__ we required the `SearchServicePrimaryKey` and `SearchServiceUri` we retrieve it from the `environment variable`.
 
     __Note__: The required environment variables by the `Day Planner App` are being exported using ARM template while deploying resources. See <a href="ARMTemplate.md">ARM Template doc</a> for more details.
+    
     ![](img/image-48.png)
 
 1.	Click on the __Overview__ present on left side panel, it will open `App Service` overview. It contains the `URL` where our application is hosted.
 
-    ![](img/image-7.png)
+    ![](img/image-7.PNG)
 
 1.	Once you click on the `URL`, the application will launch and it will take some time for first time launch. The reason behind this is, that it will create the table schema with sample data in the `AzureDB for PostgreSQL` for current date. It will also create index and sample documents in that index with `Azure Search Service`. 
 
