@@ -1,14 +1,15 @@
 class WaypointController < ApplicationController
 	protect_from_forgery with: :null_session
 	require 'json'
+	require 'httparty'
 
 	def waypoint
+		# fetch connection string from database.yml file
 		$connection_string = (ActiveRecord::Base.configurations["azure_dayplanner_db"])
-		@database_url = $connection_string["azure_db_url"]
-		$connection = ActiveRecord::Base.establish_connection(@database_url)
-		
+		$connection = ActiveRecord::Base.establish_connection($connection_string["Postgres.connstr"])
 		if request.post?
 			if params
+				# Insert data.
 				title = params[:title]
 				meeting_date =  params[:meeting_date]
 				start_time = params[:start_time]
@@ -28,6 +29,7 @@ class WaypointController < ApplicationController
 			end
 		else
 			if params[:date]
+				# Check for engagements table availability
 				date = params[:date]
 				date.delete! "'"
 				selected_date = "'" + (date.split('/')[2] + "/" + date.split('/')[0] + "/" + date.split('/')[1]) + "'";
@@ -47,6 +49,7 @@ class WaypointController < ApplicationController
 						format.json { render json: $results }  # respond with the created JSON object
 					end
 				else
+					# Schema to create an table and adding sample data.
 					sample_query = "CREATE EXTENSION postgis SCHEMA public VERSION '2.3.2';\
 					CREATE TABLE engagements ( \
                            loc_id integer NOT NULL, \
@@ -69,7 +72,6 @@ class WaypointController < ApplicationController
                            ('Renton, WA, USA', 'Fourth Engagement', CURRENT_DATE, '5:30 PM', '6:00 PM', ST_GeographyFromText('point(-122.218031 47.471115)')),\
                            ('Tacoma, WA, USA', 'Last Engagement', CURRENT_DATE, '7:00 PM', '8:00 PM', ST_GeographyFromText('point(-122.457853 47.233862)'));";
 					$request = ActiveRecord::Base.connection.execute(sample_query)
-
 					get_query = "select array_to_json(array_agg(row_to_json(t))) as meeting_data from (select loc_id, loc_name, title, date, to_char(start_time::time, 'HH12:MI AM') as start, to_char(end_time::time, 'HH12:MI AM') as end, ST_AsGeoJSON(location)::json As geometry from engagements where date = #{selected_date} ORDER BY start_time ) as t; "
 					$results = ActiveRecord::Base.connection.execute(get_query)
 					objLocationArray = Array.new
@@ -84,10 +86,41 @@ class WaypointController < ApplicationController
 		end
 	end
 
-	def create
-
+	# Create index for Azure Search Service
+	def index
+		$config_info = (ActiveRecord::Base.configurations["azure_dayplanner_db"])
+		file = File.open('app\assets\javascripts\Payloads.js')
+		create_index = JSON.parse(file.read)
+		create_data = create_index.to_json
+		url = "#{$config_info["serviceURL"]}" + "/indexes/" + "#{$config_info["Azuresearch.indexName"]}" + "/?api-version=" + "#{$config_info["Azuresearch.apiVersion"]}"
+		create_response = HTTParty.put(url, headers: {'api-key': "#{$config_info["apiKey"]}", 'Content-Type' => 'application/json'}, body: create_data, verify: false )
+		if create_response.code == 201
+			insert_index_data
+		end
 	end
-	def show
-
+	# Add sample data into created index
+	def insert_index_data
+		url = "#{$config_info["serviceURL"]}" + "/indexes/" + "#{$config_info["Azuresearch.indexName"]}" + "/docs/index?api-version=" + "#{$config_info["Azuresearch.apiVersion"]}"
+		file = File.open('app\assets\javascripts\index_data.js')
+		create_index = JSON.parse(file.read)
+		insert_data = render :json => create_index
+		insert_response = HTTParty.post(url, headers: {'api-key': "#{$config_info["apiKey"]}", 'Content-Type' => 'application/json'}, body: insert_data, verify: false )
+	end
+	# fetch save data from azure search.
+	def get_index_data
+		if params
+			lat= params[:latitude]
+			lng = params[:longitude]
+			radius = params[:radius]
+			url = "#{$config_info["serviceURL"]}" + "/indexes/" + "#{$config_info["Azuresearch.indexName"]}" + "/docs?api-version=" + "#{$config_info["Azuresearch.apiVersion"]}" + "&search=*&%24filter=geo.distance(location%2C%20geography'POINT(" + lng + "%20" + lat + ")')%20le%20" + radius + "&%24top=1000"
+			$get_index_response = HTTParty.get(url, headers: {'api-key': "#{$config_info["apiKey"]}", 'Content-Type' => 'application/json'}, verify: false )
+			objLocationArray = Array.new
+			$get_index_response.each{|r| objLocationArray.push(r)}
+			@data=objLocationArray
+			respond_to do |format|
+				format.html
+				format.json { render json: $get_index_response }
+			end
+		end
 	end
 end
