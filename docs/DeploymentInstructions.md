@@ -13,7 +13,7 @@ Perform following steps to Deploy Ruby on Rails web application in Azure and con
 5. Select __App Service Plan__. It is pricing model for hosting application, default value is set to __F1__ which represent free service.
 6. The __Repo Url__ is the GitHub repository url of web application. The default value is set to the current GitHub repository Url which contains sample Ruby on Rails application source code which connects with AzureDB for PostgreSQL Service and Azure Search service created with the ARM template. Leave as it is for this demo.
 
-    ![](img/azure-deploy.PNG)
+    ![](img/azure-deploy.png)
 
 8. Select the __Postgres Service Tier__ or leave as it is.
 9. Provide the __Postgres Compute Unit__ or leave as it is. [Learn more about Compute Unit](https://docs.microsoft.com/en-us/azure/postgresql/concepts-compute-unit-and-storage#what-are-compute-units)
