@@ -284,7 +284,8 @@
             "GITURL": "[parameters('repoUrl')]",
             "postgresqlConnectionString": "[concat('postgres://', parameters('postgresAdministratorLogin'), '%40',  variables('serverName'), ':', uriComponent(parameters('postgresAdministratorPassword')), '@', reference(resourceId('Microsoft.DBforPostgreSQL/servers/', variables('serverName'))).fullyQualifiedDomainName, ':5432/', variables('databaseName'), '?sslmode=require')]",
             "searchServicePrimaryKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices', variables('searchServiceName')), '2015-08-19').primaryKey]",
-            "searchServiceUri": "[concat('https://', variables('searchServiceName'), '.search.windows.net')]"
+            "searchServiceUri": "[concat('https://', variables('searchServiceName'), '.search.windows.net')]",
+            "pgAdminUser": "[parameters('postgresAdministratorLogin')]"
           }
         }
       ]
