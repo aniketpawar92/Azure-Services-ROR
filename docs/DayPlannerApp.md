@@ -35,7 +35,7 @@ Following are the steps to visit the hosted website with all this features:-
 
     ![](img/image-6.png)
 
-1.  Click on __Docker Container__ present on left side panel, it will display the __Custom Docker Image__ used to deploy our __Web App__. 
+1.  After opening `App Service`, click on __Docker Container__ present on left side panel, it will display the __Custom Docker Image__ which is used to deploy __Web App__. 
 
     ![](img/image-47.png)
 
