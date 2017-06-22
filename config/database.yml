@@ -9,6 +9,7 @@ default: &default
   Postgres.connstr: <%= ENV['postgresqlConnectionString'] %>
   apiKey: <%= ENV['searchServicePrimaryKey'] %>
   serviceURL: <%= ENV['searchServiceUri'] %>
+  pgAdminUser: <%= ENV['pgAdminUser'] %>
   Azuresearch.indexName: 'azure-search-data'
   Azuresearch.apiVersion: '2015-02-28-Preview'
   
@@ -17,6 +18,7 @@ azure_dayplanner_db:
   Postgres.connstr: <%= ENV['postgresqlConnectionString'] %>
   apiKey: <%= ENV['searchServicePrimaryKey'] %>
   serviceURL: <%= ENV['searchServiceUri'] %>
+  pgAdminUser: <%= ENV['pgAdminUser'] %>
   Azuresearch.indexName: 'azure-search-data'
   Azuresearch.apiVersion: '2015-02-28-Preview'
 
