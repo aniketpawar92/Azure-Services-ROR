@@ -7,6 +7,7 @@ class WaypointController < ApplicationController
 		# fetch connection string from database.yml file
 		$connection_string = (ActiveRecord::Base.configurations["azure_dayplanner_db"])
 		$connection = ActiveRecord::Base.establish_connection($connection_string["Postgres.connstr"])
+		$pgAdminUser = $connection_string["pgAdminUser"]
 		if request.post?
 			if params
 				# Insert data.
@@ -59,9 +60,9 @@ class WaypointController < ApplicationController
                            start_time time without time zone, \
                            end_time time without time zone, \
                            location geography(Point)); \
-                           ALTER TABLE public.engagements OWNER TO postgres; \
+                           ALTER TABLE public.engagements OWNER TO "+ pgAdminUser +"; \
                            CREATE SEQUENCE engagements_loc_id_seq START WITH 1 INCREMENT BY 1 NO MINVALUE NO MAXVALUE CACHE 1; \
-                           ALTER TABLE public.engagements_loc_id_seq OWNER TO postgres; \
+                           ALTER TABLE public.engagements_loc_id_seq OWNER TO "+ pgAdminUser +"; \
                            ALTER SEQUENCE engagements_loc_id_seq OWNED BY engagements.loc_id; \
                            ALTER TABLE ONLY engagements ALTER COLUMN loc_id SET DEFAULT nextval('engagements_loc_id_seq'::regclass); \
                            ALTER TABLE ONLY engagements ADD CONSTRAINT engagements_pkey PRIMARY KEY (loc_id); \
