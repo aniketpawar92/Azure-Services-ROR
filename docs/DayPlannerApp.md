@@ -35,6 +35,10 @@ Following are the steps to visit the hosted website with all this features:-
 
     ![](img/image-6.png)
 
+1.  Click on __Docker Container__ present on left side panel, it will display the __Custom Docker Image__ used to deploy our __Web App__. 
+
+    ![](img/image-47.png)
+
 1.	The overview of `App Service` will open up, on the left side panel the __Application setting__ is present.<br/>
     
     This __Application setting__ will show all environment variable used in the __Day Planner App__ and much more.<br/>
