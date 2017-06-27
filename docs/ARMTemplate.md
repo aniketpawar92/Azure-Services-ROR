@@ -182,7 +182,7 @@ Following steps provide the information about the ARM Template being used for de
             }
         }
       ```
-      Note that the type element specifies the string for an App Service plan by default it is assigned to __B1__ and properties are filled in using the parameters defined in the JSON file.
+      Note that the type element specifies the string for an App Service plan by default it is assigned to __B1__  and we are creating it of type __linux.__
 
     * Now the ARM Template starts deploying __Web App__.
       
@@ -234,7 +234,28 @@ Following steps provide the information about the ARM Template being used for de
       ```
       Note that the type element specifies the string for an App Service and other elements and properties are filled in using the parameters defined in the JSON file.
       
-      The important thing in above code is that, we deploy our __Web App__ using the __custom Docker Image__.
+      The important thing in above code is that, we deploy our __Web App__ using the __custom Docker Image__.  This docker image is of __CentOS__ type, it contain __ruby__ language and much more things.  
+
+      We are inserting important environment variable in the __App Setting__ of __Web App.__  
+
+      ```json
+      "properties": 
+       {
+           "DOCKER_CUSTOM_IMAGE_NAME": "click2cloud/azure-rails",
+           "GITURL": "[parameters('repoUrl')]",
+           "postgresqlConnectionString": "[concat('postgres://', parameters('postgresAdministratorLogin'), '%40',  variables('serverName'), ':', uriComponent(parameters('postgresAdministratorPassword')), '@', reference(resourceId('Microsoft.DBforPostgreSQL/servers/', variables('serverName'))).fullyQualifiedDomainName, ':5432/', variables('databaseName'), '?sslmode=require')]",
+           "searchServicePrimaryKey": "[listAdminKeys(resourceId('Microsoft.Search/searchServices', variables('searchServiceName')), '2015-08-19').primaryKey]",
+           "searchServiceUri": "[concat('https://', variables('searchServiceName'), '.search.windows.net')]",
+           "pgAdminUser": "[parameters('postgresAdministratorLogin')]"
+       }
+      ```
+      
+      * Firstly it will create the Web Site with using Custom Docker Image and push it into environment varibales using this template.
+      * Next it will pull the source code from provided GitHub URL and deploy it in the created App Service.
+      * Next it will create the connection string for PostgreSQL database and push it into the web app environment as environment variable, which the application uses to connect to PostgreSQL DataBase.
+      * Next it will create the app settings for the web-app and push more environment varibales to connect to Azure Search Service deployed using this template.
+      * Lastly it will push the postgresAdministratorLogin in the app setting for creating PostgreSQL database tables and sample data using Owner privilege. 
+      
       * The web app depends on three different resources. This means that Azure Resource Manager will create the web app only after the App Service plan, the PostgreSQL Database Server and Azure Search Service are created.
         ```json
         "dependsOn": 
@@ -242,9 +263,7 @@ Following steps provide the information about the ARM Template being used for de
             "[resourceId('Microsoft.Web/sites', variables('appName'))]",
             "[resourceId('Microsoft.DBforPostgreSQL/servers/', variables('serverName'))]",
             "[resourceId('Microsoft.Search/searchServices', variables('searchServiceName'))]"
-        ],
+        ]
         ```
-      * The Website have 3 nested `"resources":[....]`, each of these have different value of type.
-      * Firstly it will create the connection string for PostgreSQL database and push it into the web app environment as environment variable, which the application uses to connect to Postgres DB.
-      * Next it will create the app settings for the web-app and push more environment varibales to connect to Azure Search Service deployed using this template.
-      * Lastly it will pull the source code from provided GitHub URL and deploy it in the created App Service.
+       
+      
